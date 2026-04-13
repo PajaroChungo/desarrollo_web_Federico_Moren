@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+     <meta charset="UTF-8">
+     <title> Publicar Actividad - Actividades DCC </title>
+     <style>
+        .FormActividad.visible {
+            display: block;
+        }
+        .FormActividad {
+            display: none;
+        }
+        
+        .error.visible {
+            display: block;
+            color: #d11010 ;
+        }
+        .error {
+            display: none;
+        }
+
+        .bloqueActividad {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bloqueActividad p {
+        margin: 0.3rem 0; 
+        }
+
+        #Descripcion-Actividad {
+            width: 300px;
+            height: 150px;
+            resize: vertical;
+        }
+     </style>
+</head>
+<body>
+    <h1 id="titulo-registro" class="FormActividad">Publicar Actividad</h1> 
+    <form id="form-actividad" class="FormActividad">
+        <div>
+            <label for="Nombre-Actividad"> Nombre de la Actividad </label>
+            <input type="text" id="Nombre-Actividad" name="Nombre-Actividad" maxlength="50">
+            <span class="error" id="error-nombre"> El nombre debe tener al menos 5 caracteres.</span>
+        </div>
+        <br>
+        <div>
+            <label for="Categoria-Actividad"> Categoría de la Actividad </label>
+            <select id="Categoria-Actividad" name="Categoria-Actividad">
+                <option value="">Seleccione una categoría</option>
+                <option value="Artística">Artística</option>
+                <option value="Deportiva">Deportiva</option>
+                <option value="Social">Social</option>
+                <option value="Tecnologica">Tecnologica</option>
+                <option value="Recreativa">Recreativa</option>
+            </select>
+            <span class="error" id="error-categoria"> Debe seleccionar una categoría.</span>
+        </div>
+        <br>
+        <div>
+            <label for="Fecha-Actividad"> Fecha de la Actividad </label>
+            <input type="date" id="Fecha-Actividad" name="Fecha-Actividad">
+            <span class="error" id="error-fecha"> Debe seleccionar una fecha.</span>
+        </div>
+        <br>
+        <div>
+            <label for="Descripcion-Actividad"> Descripción de la Actividad </label>
+            <br>
+            <textarea id="Descripcion-Actividad" name="Descripcion-Actividad" maxlength="350"></textarea>
+            <span class="error" id="error-descripcion"> La descripción debe tener al menos 10 caracteres.</span>
+        </div>
+        <br>
+        <div>
+            <label for="files"> Archivos Adjuntos</label>
+            <input type="file" id="files" name="files" multiple accept="image/*,video/*">
+            <span class="error" id="error-archivos"> Debe adjuntar al menos un archivo.</span>
+        </div>
+        <br>
+        <div>
+            <label for="Url">Url Actividad</label>
+            <input type="url" id="Url" name="Url" maxlength="100">
+            <span class="error" id="error-url"> Debe ingresar una URL válida.</span>
+        </div>
+        <br>
+        <button type="submit"> Publicar Actividad </button>
+    </form>
+    <h2>Lista Actividades</h2>
+    <p id="mensaje-registro" class="error"> Debe registrarse para publicar actividades. </p>
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+    <button type="button" id="boton-registro" class="FormActividad" onclick="window.location.href='Pagina_Registro.html'">Registrarse</button>
+    <button type="button" onclick="window.location.href='inicio.html'">Volver al inicio</button>
+    <button type="button" onclick="window.location.href='ListaUsuarios.html'">Usuarios</button>
+    <button type="button" onclick="window.location.href='Metricas.html'">Métricas</button>
+    </div>
+    <div id="lista-actividades"></div>
+    <div class = "bloqueActividad">
+        <p> Partido Football </p>
+        <p> Actividad organizada por: Pepito Pérez </p>
+        <p> El partido será en 850 a las 13:30, NO FALTEN!!!</p>
+        <p> Categoría: Deportiva </p>
+        <p> Fecha: 2026-04-13 </p>
+        <p>Contacto: pepito.perez@example.com | +56 987654321</p>
+        <a href="https://www.google.com/" target="_blank" style="display: block; margin-bottom: 0.5rem;">Más información aquí</a>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Football_in_Bloomington%2C_Indiana%2C_1995.jpg/1280px-Football_in_Bloomington%2C_Indiana%2C_1995.jpg" alt="placeholder" style="width: 100%; max-width: 400px; height: 250px; object-fit: cover;">
+    </div>
+    <div class = "bloqueActividad">
+        <p> Sesión de Dibujo </p>
+        <p> Actividad organizada por: Pepita Pereira </p>
+        <p> La sesión se organizará en la Pajarera en el horario protegido, traigan sus lápices y croqueras. Los esperamos.</p>
+        <p> Categoría: Artística </p>
+        <p> Fecha: 2026-04-22 </p>
+        <p>Contacto: pepita.pereira@example.com | +56 911112222</p>
+        <a href="https://www.google.com/" target="_blank" style="display: block; margin-bottom: 0.5rem;">Más información aquí</a>
+        <img src="https://plus.unsplash.com/premium_photo-1664910735625-928ecacf0107?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHBlcnNvbmElMjBkaWJ1amFuZG98ZW58MHx8MHx8fDA%3D" alt="placeholder" style="width: 100%; max-width: 400px; height: 250px; object-fit: cover;">
+    </div>
+    <br>
+<script src="publicar_actividades.js"></script>
+</body>
+</html>
