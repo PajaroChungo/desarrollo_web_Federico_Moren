@@ -1,0 +1,63 @@
+{%extends 'activities/base.html'%}
+{%block title%} Perfil {{ miembro.nombre }} - Actividades DCC {%endblock%}
+{%block css%}
+    <style>
+        .bloqueInfo {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bloqueInfo p {
+        margin: 0.3rem 0; 
+        }
+
+    </style>
+{%endblock%}
+{%block content%}
+    <h1> <strong> Perfil de {{miembro.nombre}} </strong> </h1>
+    <h2>Datos Personales:</h2>
+    <div class="bloqueInfo">
+        <p>Tipo: {{ miembro.tipo_miembro }}</p>
+        <p>Correo: {{ miembro.email }}</p>
+        <p>Teléfono: +56 {{ miembro.telefono }}</p>
+        {% if miembro.cargo %}
+            <p>Cargo: {{ miembro.cargo }}</p>
+        {% endif %}
+    </div>
+    <h3>Actividades de {{ miembro.nombre }}</h3>
+    {% for actividad in miembro.actividades %}
+        <div class="bloqueInfo">
+            <p><strong>{{ actividad.nombre }}</strong></p>
+            <p>Categoría: {{ actividad.tipo }}</p>
+            <p>Día: {{ actividad.dia }}</p>
+            <p>Hora: {{ actividad.hora_inicio }} | Duración: {{ actividad.duracion }} min.</p>
+            {% if actividad.descripcion %}
+                <p>{{ actividad.descripcion }}</p>
+            {% endif %}
+            {% if actividad.url %}
+                <a href="{{ actividad.url }}" target="_blank">Más información aquí</a>
+            {% endif %}
+            <div class="contenedorImagen" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                {% for foto in actividad.fotos %}
+                    {% if foto.nombre_archivo.endswith(('.mp4', '.mov', '.avi', '.webm')) %}
+                        <video controls style="width: 200px; height: 150px; object-fit: cover;">
+                            <source src="{{ url_for('static', filename=foto.ruta_archivo) }}">
+                        </video>
+                    {% else %}
+                        <img src="{{ url_for('static', filename=foto.ruta_archivo) }}" 
+                             alt="{{ foto.nombre_archivo }}"
+                             style="width: 200px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <p>Este miembro no tiene actividades publicadas.</p>
+    {% endfor %}
+{%endblock%}
+{%block javascript%}{%endblock%}

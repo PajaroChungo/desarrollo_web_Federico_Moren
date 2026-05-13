@@ -1,0 +1,42 @@
+{% extends 'auth/baseAuth.html' %}
+{% block title %} Log In - Actividades DCC {% endblock %}
+{% block css %}
+     <style>
+        .error.visible {
+            display: block;
+            color: #d11010 ;
+        }
+    </style>
+{%endblock%}
+{%block content%}
+<div class="container">
+    <h1>Log in</h1>
+    <p> Ingresa para poder subir actividades </p>
+    {% if error %}
+    <div class= "error visible" > {{ error }} </div>
+    {% endif %}
+    <div>
+        <form class= "formulario" id="login-form" action="{{ url_for('login')}}" method="post">
+            <div>
+                <label for="correo"> Correo Usuario</label>
+                <input id= "correo" name="correo" type= "text" maxlength="50">
+            </div>
+            <br>
+            <div>
+                <label for="contraseña"> Contraseña </label>
+                <input id= "contraseña" name="contraseña" type="password" maxlength="20">
+            </div>
+            <br>
+            <div class="botones">
+                <button type="submit" id="btn_LogIn"> Ingresar </button>
+            </div>
+        </form>
+        <div class = "footer-form">
+            Aún no tienes una cuenta? <a href="{{ url_for('registro')}}"> Regístrate </a>
+            <br>
+            <a href="{{ url_for('index')}}"> Volver al Inicio </a>
+        </div>
+    </div>
+</div>
+{%endblock%}
+{% block javascript %}{% endblock %}

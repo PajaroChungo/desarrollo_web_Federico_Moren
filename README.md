@@ -1,25 +1,29 @@
 Hola buenas, este es el archivo de documentación de la página Actividades DCC, trabajo de Federico Moren.
+------------------------------------------------------------------
+Si desea probar el código lea la documentación en el archivo "crear_db_juguete.py" en la carpeta "database", se ha creado una pequeña base de juguete para probar las funcionalidades.
 
-A continuación se hablarán de manera acotada algunas desiciones del diseño de la aplicación:
+Notesé que para ello es necesario tener activa la "venv" del proyecto, para ver los requisitos revise el archivo "requirement.txt".
+------------------------------------------------------------------
+A continuación se detallan algunas desiciones de diseño al momento de crear la aplicación web:
 
--Inicio: 
-Se optó por algo simplista y funcional, posee un botón para cada una de las páginas a las que se puede llegar. Se creo un SessionStorage para simular la existencia de un servidor, esto se uso en este caso para indicar al usuario, de no haberse registrado, que lo haga para poder subir alguna actividad. De hacerlo y volver a la página de inicio se saluda con el nombre ingresado para dar más personalización.
+-Login: aunque no se pedía en primera instancia, me pareció adecuado, y dado que había que registrar al usuario por medio del registro, dar la opción de ingresar a la plataforma una vez registrado.
+Esto por supuesto viene con la opción de hacer "logout" desde la navbar implementada en el archivo "base.html".
+De hecho, si desea probar más de un usuario basta con crearlo y luego hacer logout para crear otro.
 
--Página Registro: 
-Lo más notable a decir es la creación del SessionStorage una vez registrado el usuario, lo cual luego se usará en otras partes de la página.
-Se optó por dar a los "funcionarios", un tipo de usuario, la capacidad de escoger el cargo al que pertenecen con el fin de diferenciarlos mejor entre ellos. Una vez este aparece como elección es necesaria para continuar.
-Notesé que una vez registrado se limpia el formulario y se le deja al usuario en la página. En un inicio pensé en guiarlo directamente a la página de inicio, pero dado que se trata de un prototipo, de equivocarse al ingresar datos se puede sobreescribir el usuario directamente desde la página (lo que hace más fácil probar el código), o ir con el botón indicado a las actividades ó lista de usuarios.
+-Registro: dado que se iba a registrar un usuario, y darle la opción de poder volver a ingresar por medio de un login, lo más lógico fue agregar a la base de datos, en la tabla de "Miembro" el atributo "contraseña_hash". Al momento de registrarse se pide crear una contraseña (y confirmarla), esta se convierte mediante el método de hash y es guardada, esto último dado que de no hacerlo, las contraseñas se encontrarían textuales en la base de datos, lo cual es poco seguro.
 
--Publicar actividades:
-Se optó por dejar en una misma página el ingreso de información para crear una actividad como la lista de actividades, esto por la comodidad que ofrece. Con comodidad me refiero a poder ver en tiempo real que se ha creado correctamente lo que se ingreso. Además si bien hasta el momento se estaba haciendo un SessionStorage por cuestión de tiempo no se pudo aplicar a esta página, lo que provoca que se deshaga la actividad una vez se recarge la página.
-Donde si se uso esta funcionalidad fue en la aparición del form para crear actividades, este solo esta disponible si alguien se ha registrado con anterioridad, lo que evita que usuarios no registrados creen actividades sin los datos necesarios. Esto último debido a que la actividad usa la información de contacto y nombre del usuario.
-Las imágenes y videos se puedes ver una vez estan subidos en la sección de actividad de cada tarjeta.
+Además, dado que en la tarea anterior se creo la "categoría" de usuario, y de ser "funcionario" su cargo respectivo, se decidio mantener esta desición de diseño.
+Para ello notesé que en la base de datos en el apartado de usuarios se agregaron tales atributos.
 
--Lista Usuarios:
-La lista muestra 4 usuarios a la vez, se podría hacer de un poco más por la cómodidad que otorga ver más resultados sin tener que presionar un botón, sin embargo se decidió ese número debido a la ausencia de un servidor y base de datos que justifique este cambio.
-Si el usuario se ha registrado este aparecerá en la lista (un poco como pasa en Ucursos), esto es más que nada por si se busca gente con gmail, nombre o apellido similar a uno, o que compartan el tipo de usuario (no muy útil, pero interesante de aplicar).
-Notesé que al igual que pasa en la página de registro, escoger la opción de filtro de "funcionarios" habilita el filtro por "cargo", lo que viene siendo útil y acorde al filtro anterior.
+-Actividades: similar a lo que ocurría en la tarea 1 con el "SessionStorage", al registrarse apareceel formulario de las actividades. De ese modo, quienes no se encuentren registrados no podrán crear actividades.
+Esto resulta ser crucial, ya que en las actividades se usa la información de contacto del usuario registrado.
+Además no esta demás decir que se arreglaron los problemas de la primera tarea, ahora es posible agregar más de una imagen y video. Estas luego son guardadas (usando hashlib por seguridad) en la carpeta "uploads".
+Además, dado que en el enunciado no se pedía que la "url" o descripción de la actividad fueran obligatorios se decidio dejarlos como opcionales, de todas maneras, si se intenta ingresar alguno de estos dos se verificara que siguen el formato.
 
--Métricas:
-Las métricas en este caso vienen a ser un tipo de placeholder, debido a que no se tenían muchos datos debido a la naturaleza del prototipo, se "crearon" datos para los gráficos, intentando mantenerse fiel a lo visto en la página y entre ellos.
-Estos fueron hechos con una página externa (https://quickchart.io/documentation/chart-types/) y no interactúan directamente con la página (agregar una actividad no va a cambiar los datos), esto se hizo de acuerdo a lo pedido y hablado en clases.
+-Lista de Usuarios: esta lista ahora se maneja por medio de la base de datos y flask, sin embargo sigue poseyendo los mismos filtros y opciones de orden que en la tarea 1.
+En esta entrega, y para resolver el problema de tener que mostrar las actividades del usuario al seleccionar uno de la lista, se decidio hacerlo por medio de un "perfil".
+Similar a como pasa en otras plataformas, al hacer "click" en el nombre de un usuario de la lista, se redirije a una nueva página con todas las actividades e información de tal persona.
+
+Es necesario considerar que el archivo de "usuarios.js" posee el código necesario para hacer aparecer el filtro de "cargo" una vez escogida la categoría "funcionario", esto es debido a que de hacerlo con flask esta no aparecía hasta presionar el botón de "buscar". Se intentó otra forma, pero requeria recargar la página y borrar lo escrito en los otros filtros de búsqueda.
+
+-Métricas: dado que aún no sé pide trabajarla con datos como tal, nuevamente se usaron "placeholders" con datos acordes a la información de la página (no con cifras reales sí). Estas son imagenes en formato "png" que se encuentran en la carpeta "svg" para que no ocurran errores con urls como la otra vez.

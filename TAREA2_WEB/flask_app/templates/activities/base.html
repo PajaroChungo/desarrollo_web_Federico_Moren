@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang ="es">
+    <head>
+        <meta charset="utf-8">
+        <title> {%block title%}{%endblock%} </title>
+        {%block css%}{%endblock%}
+        
+    </head>
+    <body>
+        <h1>Actividades DCC</h1>
+        <div class = "navbar">
+            <a class = "navbar-page" href="{{ url_for('index')}}">Inicio</a>
+            <a class = "navbar-page" href="{{ url_for('actividades')}}">Actividades</a>
+            <a class = "navbar-page" href="{{ url_for('usuarios')}}">Usuarios</a>
+            <a class = "navbar-page" href="{{ url_for('metricas')}}">Métricas</a>
+            {% if user%}
+                <a class="navbar-page" href="{{ url_for('logout')}}">Cerrar Sesión</a>
+            {% else %}
+                <a class= "navbar-page" href="{{ url_for('login')}}">Login</a>
+            {% endif %}
+        </div>
+        <div class="main-container">
+            {%block content%}{%endblock%}
+            {%block javascript%}{%endblock%}
+        </div>
+    </body>
+</html>

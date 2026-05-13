@@ -1,0 +1,48 @@
+{%extends 'activities/base.html'%}
+{%block title%} Inicio - Actividades DCC {%endblock%}
+{%block css%}
+    <style>
+        .mensajeRegistro {
+            color: rgb(236, 26, 54);
+            display: block;
+        }
+
+        .bloqueUsuario {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bloqueUsuario p {
+        margin: 0.3rem 0; 
+        }
+    </style>
+{%endblock%}
+{%block content%}
+    {% if user %}
+        <h1>Bienvenido, {{ nombre }} a Actividades DCC</h1>
+    {% else %}
+        <h1>Bienvenido a Actividades DCC</h1>
+        <p class="mensajeRegistro">Para poder publicar actividades es necesario registrarse primero.</p>
+    {% endif %}
+    <p>En esta página puedes publicar tus actividades, revisar las actividades publicadas y revisar las métricas de la plataforma.</p>
+    <h2>Conoce a algunos de los últimos usuarios en unirse:</h2>
+    {%for miembro in miembros_recientes%}
+        <div class="bloqueUsuario">
+            <p><strong>{{ miembro.nombre }}</strong></p>
+            <p>Tipo: {{ miembro.tipo_miembro }}</p>
+            <p>Correo: {{ miembro.email }}</p>
+            <p>Teléfono: +56 {{ miembro.telefono }}</p>
+            {% if miembro.cargo %}
+                <p>Cargo: {{ miembro.cargo }}</p>
+            {% endif %}
+        </div>
+    {%else%}
+        <p> Aún no hay usuarios registrados, sé el primero!!!</p>
+    {%endfor%}
+{%endblock%}
+{%block javascript%}{%endblock%}

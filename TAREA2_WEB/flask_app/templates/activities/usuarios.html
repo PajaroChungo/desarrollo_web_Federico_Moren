@@ -1,0 +1,101 @@
+{%extends 'activities/base.html'%}
+{%block title%} Lista de Usuarios - Actividades DCC {%endblock%}
+{%block css%}
+     <style>
+        .cargo.visible {
+            display: block;
+        }
+        .cargo {
+            display: none;
+        }
+
+        .bloqueUsuario {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bloqueUsuario p {
+        margin: 0.3rem 0; 
+        }
+
+    </style>
+{%endblock%}    
+{%block content%}
+    <h1> Lista de Usuarios </h1>
+    <p> A continuación se muestran todos los usuarios de la plataforma.</p>
+    <p> Use el buscador y los filtros para encontrar a un usuario en específico.</p>
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <form method="GET" action="{{ url_for('usuarios') }}">
+        <div>
+            <input type="text" name="busqueda" placeholder="Buscar por nombre" value="{{ request.args.get('busqueda', '') }}">
+        </div>
+        <br>
+        <div>
+            <label for="filtro-tipo">Filtrar por Tipo:</label>
+            <select name="filtro_tipo" id="filtro-tipo">
+                <option value="">Todos los tipos</option>
+                <option value="estudiante_post" {% if request.args.get('filtro_tipo') == 'estudiante_post' %}selected{% endif %}>Estudiante de postgrado</option>
+                <option value="estudiante_pre" {% if request.args.get('filtro_tipo') == 'estudiante_pre' %}selected{% endif %}>Estudiante de pregrado</option>
+                <option value="funcionario" {% if request.args.get('filtro_tipo') == 'funcionario' %}selected{% endif %}>Funcionario</option>
+                <option value="academico" {% if request.args.get('filtro_tipo') == 'academico' %}selected{% endif %}>Académico</option>
+            </select>
+        </div>
+        <div id= "DivFiltroCargo" class = "cargo">
+                <br>
+                <label for="filtro-cargo">Filtrar por cargo (solo para funcionarios):</label>
+                <select name="filtro_cargo" id="filtro-cargo">
+                    <option value="">Todos los cargos</option>
+                    <option value="administrativo" {% if request.args.get('filtro_cargo') == 'administrativo' %}selected{% endif %}>Administrativo</option>
+                    <option value="profesional" {% if request.args.get('filtro_cargo') == 'profesional' %}selected{% endif %}>Profesional</option>
+                    <option value="coordinador" {% if request.args.get('filtro_cargo') == 'coordinador' %}selected{% endif %}>Coordinador</option>
+                    <option value="jefatura" {% if request.args.get('filtro_cargo') == 'jefatura' %}selected{% endif %}>Jefatura</option>
+                    <option value="auxiliar" {% if request.args.get('filtro_cargo') == 'auxiliar' %}selected{% endif %}>Auxiliar</option>
+                </select>
+        </div>
+        <br>
+        <div>
+            <label for="ordenar-por">Ordenar por:</label>
+            <select name="ordenar_por" id="ordenar-por">
+                <option value="nombre" {% if request.args.get('ordenar_por') == 'nombre' %}selected{% endif %}>Nombre</option>
+                <option value="email" {% if request.args.get('ordenar_por') == 'email' %}selected{% endif %}>Correo</option>
+                <option value="tipo" {% if request.args.get('ordenar_por') == 'tipo' %}selected{% endif %}>Tipo</option>
+            </select>
+        </div>
+        <br>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div id="lista-usuarios">
+        {% for usuario in usuarios %}
+            <div class="bloqueUsuario">
+                <a href="{{ url_for('perfil_miembro', miembro_id=usuario.id) }}">
+                    <strong>{{ usuario.nombre }}</strong></a>
+                <p>Tipo: {{ usuario.tipo_miembro }}</p>
+                <p>Correo: {{ usuario.email }}</p>
+                <p>Teléfono: +56 {{ usuario.telefono }}</p>
+                {% if usuario.cargo %}
+                    <p>Cargo: {{ usuario.cargo }}</p>
+                {% endif %}
+            </div>
+        {%endfor%}
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        {% if pagina > 1 %}
+            <a href="{{url_for('usuarios', pagina=pagina-1, busqueda=request.args.get('busqueda',''), filtro_tipo=request.args.get('filtro_tipo',''), filtro_cargo=request.args.get('filtro_cargo',''), ordenar_por=request.args.get('ordenar_por','nombre'))}}">Anterior</a>
+        {% endif %}
+        <span>Página {{ pagina }} de {{ total_paginas }}</span>
+        {% if pagina < total_paginas %}
+            <a href="{{ url_for('usuarios', pagina=pagina+1, busqueda=request.args.get('busqueda',''), filtro_tipo=request.args.get('filtro_tipo',''), filtro_cargo=request.args.get('filtro_cargo',''), ordenar_por=request.args.get('ordenar_por','nombre')) }}">Siguiente</a>
+        {% endif %}
+    </div>
+    <br>
+{%endblock%}
+{%block javascript%}
+    <script src= "{{ url_for('static', filename = 'js/usuarios.js')}}"></script>
+{%endblock%}
