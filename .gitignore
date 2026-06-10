@@ -17,3 +17,6 @@ instance/
 
 .DS_Store
 Thumbs.db
+
+TAREA3_WEB/flask_app/static/uploads/*
+!TAREA3_WEB/flask_app/static/uploads/.gitkeep
