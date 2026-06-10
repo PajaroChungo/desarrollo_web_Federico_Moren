@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session
-from utils.validations import validate_activity, validate_login_user, validate_register_user
+from flask_cors import cross_origin
+from utils.validations import validate_activity, validate_comment, validate_login_user, validate_register_user, validateCommentName, validateCommentText
 from werkzeug.utils import secure_filename
 import hashlib
 import filetype
 import os
 
-from database.db import create_activity, create_image, get_activities, get_activities_and_user, get_comunas, get_regiones, get_user_byEmail, get_user_byId, get_usuarios, get_usuarios_recientes, login_user, register_user
+from database.db import create_activity, create_comentario, create_image, get_activities, get_activities_and_user, get_activities_per_district, get_activities_per_type, get_activity_byId, get_comentarios_byActividad, get_comunas, get_regiones, get_user_byEmail, get_user_byId, get_users_register_per_date, get_usuarios, get_usuarios_recientes, login_user, register_user
 
 UPLOAD_FOLDER = 'static/uploads'
 
@@ -153,9 +154,72 @@ def perfil_miembro(miembro_id):
         return redirect(url_for('usuarios'))
     return render_template('activities/perfil_miembro.html', miembro=miembro, user= session.get("user", None))
 
+@app.route("/actividad/<int:actividad_id>", methods=["GET"])
+def perfil_actividad(actividad_id):
+    actividad = get_activity_byId(actividad_id)
+    if not actividad:
+        return redirect(url_for('actividades'))
+    return render_template('activities/perfil_actividad.html',actividad=actividad, user=session.get("user", None))
+
+@app.route("/actividad/<int:actividad_id>/comentario", methods = ["POST"])
+@cross_origin(origin="127.0.0.1", supports_credentials=True)
+def agregar_comentario(actividad_id):
+    actividad = get_activity_byId(actividad_id)
+    if not actividad:
+        return jsonify({"status": "error", "data": "No hay actividad."}), 400
+    data = request.get_json()
+    nombre = (data.get("nombre") or "").strip()
+    texto = (data.get("texto") or "").strip()
+    errores = {}
+    if not validateCommentName(nombre):
+        errores["nombre"] = "El nombre debe tener entre 3 y 80 caracteres."
+    if not validateCommentText(texto):
+        errores["texto"] = "El comentario debe tener al menos 5 caracteres."
+    if errores:
+        return jsonify({"status": "error", "data": errores}), 400
+    create_comentario(actividad_id, nombre, texto)
+    return jsonify({"status" : "ok"})
+    
+@app.route("/actividad/<int:actividad_id>/comentarios", methods = ["GET"])
+def lista_comentarios(actividad_id):
+    comentarios = get_comentarios_byActividad(actividad_id)
+    return jsonify([{
+        "nombre": comentario.nombre,
+        "texto" : comentario.texto,
+        "fecha" : comentario.fecha.strftime("%d/%m/%Y | %H:%M")
+    } for comentario in comentarios
+    ])
+
 @app.route("/metricas")
 def metricas():
     return render_template("activities/metricas.html")
+
+@app.route("/get-stats-registersPerDay", methods=["GET"])
+@cross_origin(origin="http://127.0.0.1", supports_credentials = True)
+def get_stats_registersPerDay():
+    data = get_users_register_per_date()
+    return jsonify({
+        'dias': [str(dato.dia) for dato in data],
+        'cantidad': [dato.cantidad for dato in data]
+    })
+
+@app.route("/get-stats-activitiesPerType", methods=["GET"])
+@cross_origin(origin="http://127.0.0.1", supports_credentials = True)
+def get_stats_activitiesPerType():
+    data= get_activities_per_type()
+    return jsonify({
+        'tipos': [dato.tipo for dato in data],
+        'cantidad': [dato.cantidad for dato in data]
+    })
+
+@app.route("/get-stats-activitiesPerDistrict", methods=["GET"])
+@cross_origin(origin="http://127.0.0.1", supports_credentials = True)
+def get_stats_activitiesPerDistrict():
+    data = get_activities_per_district()
+    return jsonify({
+        "comunas": [dato.comuna for dato in data],
+        "cantidad": [dato.cantidad for dato in data]
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

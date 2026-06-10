@@ -103,7 +103,7 @@ validateForm = (event) => {
 
     if (isValid) {
         const MyForm = document.getElementById('form-actividad');
-    const formData = new FormData(MyForm);
+        const formData = new FormData(MyForm);
     
     formData.delete('files');
     archivosCombinados.forEach(file => {

@@ -32,7 +32,7 @@
     <h3>Actividades de {{ miembro.nombre }}</h3>
     {% for actividad in miembro.actividades %}
         <div class="bloqueInfo">
-            <p><strong>{{ actividad.nombre }}</strong></p>
+            <p><strong><a href="{{ url_for('perfil_actividad', actividad_id=actividad.id) }}">{{ actividad.nombre }}</a></strong></p>
             <p>Categoría: {{ actividad.tipo }}</p>
             <p>Día: {{ actividad.dia }}</p>
             <p>Hora: {{ actividad.hora_inicio }} | Duración: {{ actividad.duracion }} min.</p>

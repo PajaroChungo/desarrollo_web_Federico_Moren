@@ -1,0 +1,86 @@
+{%extends 'activities/base.html'%}
+{%block title%} {{ actividad.nombre }} - Actividades DCC {%endblock%}
+{%block css%}
+    <style>
+        .error.visible {
+            display: block;
+            color: #d11010;
+        }
+        .error {
+            display: none;
+        }
+        .bloqueActividad {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .contenedorImagen {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .bloqueComentario {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #f9f9f9;
+        }
+    </style>
+{%endblock%}
+{%block content%}
+    <div class="bloqueActividad">
+        <h1>{{ actividad.nombre }}</h1>
+        <p>Actividad organizada por: <a href="{{ url_for('perfil_miembro', miembro_id=actividad.miembro.id) }}">{{ actividad.miembro.nombre }}</a></p>
+        {% if actividad.descripcion %}
+            <p>{{ actividad.descripcion }}</p>
+        {% endif %}
+        <p>Categoría: {{ actividad.tipo }}</p>
+        <p>Día: {{ actividad.dia }}</p>
+        <p>Hora: {{ actividad.hora_inicio }} | Duración: {{ actividad.duracion }} min.</p>
+        <p>Contacto: {{ actividad.miembro.email }} | +56 {{ actividad.miembro.telefono }}</p>
+        {% if actividad.url %}
+            <a href="{{ actividad.url }}" target="_blank" style="display: block; margin-bottom: 0.5rem;">Más información aquí</a>
+        {% endif %}
+        <div class="contenedorImagen">
+            {% for foto in actividad.fotos %}
+                {% if foto.nombre_archivo.endswith(('.mp4', '.mov', '.avi', '.webm')) %}
+                    <video controls style="max-width: 300px; width: 100%; height: auto;">
+                        <source src="{{ url_for('static', filename=foto.ruta_archivo) }}">
+                    </video>
+                {% else %}
+                    <img src="{{ url_for('static', filename=foto.ruta_archivo) }}"
+                        alt="{{ foto.nombre_archivo }}"
+                        style="max-width: 600px; width: 100%; height: auto;">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <span id="actividad-id" data-id="{{ actividad.id }}" style="display:none;"></span>
+    <h2>Agregar comentario</h2>
+    <div id="form-comentario">
+        <div>
+            <label for="nombre-comentario">Nombre</label>
+            <input type="text" id="nombre-comentario" minlength="3" maxlength="80">
+            <span class="error" id="error-nombre-comentario"> El nombre de usuario debe tener entre 3 y 80 caracteres.</span>
+        </div>
+        <br>
+        <div>
+            <label for="texto-comentario" style="display: block">Comentario</label>
+            <textarea id="texto-comentario" rows="4" cols="50" maxlength="300"></textarea>
+         <span class="error" id="error-texto-comentario"> El comentario debe tener un mínimo de 5 caracteres.</span>
+        </div>
+        <br>
+        <button type="button" id="btn-agregar-comentario">Agregar comentario</button>
+    </div>
+    <h3>Comentarios</h3>
+    <div id = "lista-comentarios"></div>
+{%endblock%}
+{%block javascript%}
+<script src="{{ url_for('static', filename='js/perfil_actividad.js') }}"></script>
+{%endblock%}

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Integer, String, Column, ForeignKey, Enum, Text, DateTime
+from sqlalchemy import create_engine, Integer, String, Column, ForeignKey, Enum, Text, DateTime, func
 from sqlalchemy.orm import joinedload, sessionmaker, declarative_base, relationship
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -49,6 +49,7 @@ class Miembro(Base):
     comuna_id = Column(Integer, ForeignKey('comuna.id'), nullable=False)
     tipo_miembro = Column(Enum('estudiante_pre', 'estudiante_post', 'funcionario', 'academico'), nullable=False)
     cargo = Column(Enum('administrativo', 'profesional', 'coordinador', 'jefatura', 'auxiliar'), nullable=True)
+    
     # Relación con actividad
     actividades = relationship('Actividad', backref='miembro', lazy=True)
 
@@ -68,12 +69,24 @@ class Actividad(Base):
     # Relación con foto
     fotos = relationship('Foto', backref='actividad', lazy=True)
 
+    # Relación con comentario
+    comentarios = relationship('Comentario', backref= 'actividad', lazy = True)
+
 class Foto(Base):
     __tablename__ = 'foto'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     ruta_archivo = Column(String(300), nullable=False)
     nombre_archivo = Column(String(300), nullable=False)
+    actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
+
+class Comentario(Base):
+    __tablename__ = 'comentario'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, nullable=False, default=datetime.now)
     actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
 
 #----Database functions----
@@ -104,6 +117,18 @@ def get_user_byEmail(email):
     session.close()
     return user
 
+def get_activity_byId(activity_id):
+    session = SessionLocal()
+    actividad = session.query((Actividad))\
+        .options(
+            joinedload(Actividad.miembro),
+            joinedload(Actividad.fotos),
+            joinedload(Actividad.comentarios)
+        )\
+        .filter(Actividad.id == activity_id).first()
+    session.close()
+    return actividad
+    
 def get_user_byId(user_id):
     session = SessionLocal()
     user = session.query(Miembro).filter_by(id=user_id).first()
@@ -178,6 +203,18 @@ def create_image(ruta_archivo, nombre_archivo, actividad_id):
     session.commit()
     session.close()
 
+def create_comentario(actividad_id, nombre, texto):
+    session = SessionLocal()
+    nuevo_comentario = Comentario(
+        actividad_id=actividad_id,
+        nombre=nombre,
+        texto=texto,
+        fecha=datetime.now()
+    )
+    session.add(nuevo_comentario)
+    session.commit()
+    session.close()
+
 def get_usuarios(busqueda='', filtro_tipo='', filtro_cargo='', ordenar_por='nombre'):
     session = SessionLocal()
     query = session.query(Miembro)
@@ -205,3 +242,44 @@ def get_activities_and_user(user_id):
     .filter(Miembro.id == user_id).first()
     session.close()
     return miembro_y_Actividades
+
+def get_comentarios_byActividad(actividad_id):
+    session = SessionLocal()
+    comentarios = session.query(Comentario)\
+                         .filter(Comentario.actividad_id == actividad_id)\
+                         .order_by(Comentario.fecha.desc()).all()
+    session.close()
+    return comentarios
+
+#--Funciones de Stats--
+#Gráfico 1
+def get_users_register_per_date():
+    session = SessionLocal()
+    users = session.query(func.date(Miembro.fecha_registro).label('dia')
+                          ,func.count(Miembro.id).label('cantidad'))\
+                            .group_by(func.date(Miembro.fecha_registro)).order_by(func.date(Miembro.fecha_registro))\
+                            .all()
+    session.close()
+    return users
+
+#Gráfico 2
+def get_activities_per_type():
+    session = SessionLocal()
+    activities = session.query(Actividad.tipo.label("tipo")
+                               ,func.count(Actividad.id).label("cantidad"))\
+                               .group_by(Actividad.tipo).order_by(Actividad.tipo)\
+                               .all()
+
+    session.close()
+    return activities
+
+#Gráfico 3
+def get_activities_per_district():
+    session = SessionLocal()
+    activities = session.query(Comuna.nombre.label("comuna")
+                               ,func.count(Actividad.id).label("cantidad"))\
+                               .join(Miembro, Miembro.comuna_id == Comuna.id).join(Actividad, Actividad.miembro_id == Miembro.id)\
+                                .group_by(Comuna.id, Comuna.nombre).order_by(Comuna.nombre)\
+                                    .all()
+    session.close()
+    return activities

@@ -81,3 +81,19 @@ def validate_activity(user, nombre, dia, hora_inicio, duracion, tipo, descripcio
      validate_imagenes(imagenes) and
      dia and hora_inicio and tipo
      )
+
+def validateCommentName(name):
+    return (
+        bool(name)
+        and len(name.strip()) >= 3
+        and len(name.strip()) <= 80
+    )
+
+def validateCommentText(text):
+    return(
+         bool(text)
+         and len(text.strip()) >= 5
+    )
+
+def validate_comment(nombre, texto):
+     return (validateCommentName(nombre) and validateCommentText(texto))

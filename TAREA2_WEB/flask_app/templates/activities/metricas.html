@@ -1,29 +1,35 @@
 {%extends 'activities/base.html'%}
 {%block title%} Métricas - Actividades DCC {%endblock%}
-{%block css%}
-    <style>
-        .Graficos{
-            width: 600px; 
-            height: auto;
-        }
-    </style>
-{%endblock%}
+{%block css%}{%endblock%}
 {%block content%}
     <h1>Métricas de la página</h1>
-    <p>Acá podrás observar los números que se manejan en la página. La distribución de usuarios y actividades de la plataforma.</p>
-    <figure>
-        <img src="{{ url_for('static', filename='svg/distribucion_Actividades_PorTipo.png') }}" alt="Gráfico Tipos de Usuario" class = "Graficos">
-        <figcaption>Distribución de usuarios por tipo (en porcentaje)</figcaption>
-    </figure>
-    <br>
-    <figure>
-        <img src="{{ url_for('static', filename='svg/crecimiento_Actividades_PorTipo.png') }}" alt="Grafico Crecimiento Actividades" class = "Graficos">
-        <figcaption>Crecimiento en el tiempo de actividades publicadas por categoría (por cantidad)</figcaption>
-    </figure>
-    <br>
-    <figure>
-        <img src="{{ url_for('static', filename='svg/distribucion_Usuarios_Porcentaje.png') }}" alt="Grafico Distribución Actividades" class = "Graficos">
-        <figcaption>Distribución de actividades publicadas por categoría (por cantidad)</figcaption>
-    </figure>
+    <p>Acá podrás observar los números que se manejan en la página.</p>
+    <div class = "stats-container">
+        <figure class = "highcharts-figure">
+            <div id="container_1"></div>
+            <p class = "highcharts-description">
+                El gráfico anterior muestra la cantidad de miembros registrados por día.
+            </p>
+        </figure>
+
+        <figure class = "highcharts-figure">
+            <div id="container_2"></div>
+            <p class = "highcharts-description">
+                El gráfico anterior muestra la cantidad de actividades por tipo.
+        </figure>
+
+        <figure class = "highcharts-figure">
+            <div id="container_3"></div>
+            <p class = "highcharts-description">
+                El gráfico anterior muestra la cantidad de actividades registradas por comuna.
+            </p>
+        </figure>
+    </div>
+    <div style="text-align: center;">
+        <a href="{{ url_for('index') }}">Volver a la portada</a>
+    </div>
 {%endblock%}
-{%block javascript%}{%endblock%}
+{%block javascript%}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src= "{{ url_for('static', filename = 'js/metricas.js')}}"></script>
+{%endblock%}

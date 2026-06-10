@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash
-from datetime import datetime
-from db import SessionLocal, Miembro, Actividad
+from datetime import datetime, timedelta
+from db import Comentario, SessionLocal, Miembro, Actividad
 
 #Ejecute python database/init_db.py y luego el archivo de region-comunas.sql
 #Luego, en la terminal: "python database/crear_db_juguete.py"
@@ -23,15 +23,27 @@ usuarios = [
     ('Diego', 'Ramírez', 'diego.ramirez@example.com', '978901234', 'academico', None),
 ]
 
+fechas_registro = [
+    datetime.now() - timedelta(days=60),
+    datetime.now() - timedelta(days=60),
+    datetime.now() - timedelta(days=30),
+    datetime.now() - timedelta(days=30),
+    datetime.now() - timedelta(days=15),
+    datetime.now() - timedelta(days=7),
+    datetime.now() - timedelta(days=2),
+]
+
+comunas = [10304, 20303, 30202, 40102, 50506, 60105, 20202]
+
 session = SessionLocal()
-for nombre, apellido, email, telefono, tipo, cargo in usuarios:
+for i, (nombre, apellido, email, telefono, tipo, cargo) in enumerate(usuarios):
     user = Miembro(
         nombre=f"{nombre} {apellido}",
         email=email,
         telefono=telefono,
         contraseña_hash=generate_password_hash('Password1'),
-        fecha_registro=datetime.now(),
-        comuna_id=10101,
+        fecha_registro=fechas_registro[i],
+        comuna_id=comunas[i],
         tipo_miembro=tipo,
         cargo=cargo
     )
@@ -70,5 +82,30 @@ actividades = [
 for actividad in actividades:
     session.add(actividad)
 session.commit()
-session.close()
 print('Actividades creadas exitosamente')
+
+actividades = session.query(Actividad).all()
+
+comentarios = [
+    Comentario(actividad_id=actividades[0].id, nombre='Pedro Álvarez',
+               texto='Excelente torneo, muy bien organizado.',
+               fecha=datetime.now() - timedelta(days=5)),
+    Comentario(actividad_id=actividades[0].id, nombre='Camila Torres',
+               texto='Me encantó participar, volveré el próximo mes.',
+               fecha=datetime.now() - timedelta(days=3)),
+    Comentario(actividad_id=actividades[2].id, nombre='Roberto Fuentes',
+               texto='El taller estuvo muy entretenido, aprendí bastante.',
+               fecha=datetime.now() - timedelta(days=10)),
+    Comentario(actividad_id=actividades[4].id, nombre='Valentina Cruz',
+               texto='Gran partido, ojalá se repita pronto.',
+               fecha=datetime.now() - timedelta(days=1)),
+    Comentario(actividad_id=actividades[5].id, nombre='Andrés Morales',
+               texto='Muy buena charla, quedé con ganas de aprender más de IA.',
+               fecha=datetime.now() - timedelta(hours=5)),
+]
+
+for comentario in comentarios:
+    session.add(comentario)
+session.commit()
+session.close()
+print('Comentarios creados exitosamente')
